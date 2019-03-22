@@ -5,7 +5,10 @@ namespace App\MessageHandler;
 
 use App\MessageCommand\BuyBeerCommand;
 use App\MessageCommand\ConsumeBeerCommand;
-use App\Repository\BeerCollection;
+use App\ProophessorDo\Infrastructure\Repository\EventStoreTodoList;
+use App\ProophessorDo\Model\Todo\Todo;
+use App\ProophessorDo\Model\Todo\TodoId;
+use App\ProophessorDo\Model\Todo\TodoList;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -17,14 +20,14 @@ class BuyBeerCommandHandler implements MessageHandlerInterface
     private $bus;
 
     /**
-     * @var BeerCollection
+     * @var EventStoreTodoList
      */
-    private $beerCollection;
+    private $toDoList;
 
-    public function __construct(MessageBusInterface $bus)
+    public function __construct(TodoList $list, MessageBusInterface $bus)
     {
+        $this->toDoList = $list;
         $this->bus = $bus;
-        //$this->beerCollection = $beerCollection;
     }
 
     /**
@@ -39,5 +42,9 @@ class BuyBeerCommandHandler implements MessageHandlerInterface
                 new ConsumeBeerCommand($command->getName(), $command->getAmount())
             );
         }
+
+        $todo = Todo::post('initialize', TodoId::generate());
+
+        $this->toDoList->save($todo);
     }
 }

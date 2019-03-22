@@ -3,10 +3,8 @@
 namespace App\Controller;
 
 use App\MessageCommand\BuyBeerCommand;
-use App\Repository\BeerRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Routing\Annotation\Route;
 
 class MessangerController
 {
@@ -26,13 +24,5 @@ class MessangerController
         $bus->dispatch(new BuyBeerCommand($name, $amount));
 
         return new Response('John, thank you');
-    }
-
-    /**
-     * @Route("/es")
-     */
-    public function es(BeerRepository $beerRepository)
-    {
-
     }
 }
