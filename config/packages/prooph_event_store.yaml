@@ -1,0 +1,35 @@
+prooph_event_store: #~
+  stores:
+    beer_store:
+      event_store: Prooph\EventStore\Pdo\MySqlEventStore
+      repositories:
+        ##beer_list:
+         # repository_class: App\Repository\UserBeerRepository
+          #aggregate_type: App\Aggregate\UserBeer
+         # aggregate_translator: prooph_event_sourcing.aggregate_translator
+        beer_list:
+          repository_class: App\Repository\UserBeerRepository
+          aggregate_type: App\Aggregate\UserBeer
+          aggregate_translator: prooph_event_sourcing.aggregate_translator
+
+    #default:
+    #    event_store: 'app.event_store.default'
+
+  #services:
+  #    _defaults:
+  #        public: false
+
+  #Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator: ~
+services:
+  Prooph\EventStore\Pdo\MySqlEventStore:
+    arguments: ['@prooph_event_store.message_factory', '@doctrine.pdo.connection', '@prooph_event_store.single_stream_strategy']
+
+  doctrine.pdo.connection:
+    class: PDO
+    factory: ['@database_connection', getWrappedConnection]
+
+  prooph_event_store.single_stream_strategy:
+    class: Prooph\EventStore\Pdo\PersistenceStrategy\MySqlSingleStreamStrategy
+
+  prooph_event_sourcing.aggregate_translator:
+    class: Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator
