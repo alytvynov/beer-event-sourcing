@@ -20,3 +20,8 @@ Run the symfony command
 ```
 php bin/console prooph_event_store.todo_store
 ```
+
+To test saving GET REQUEST 
+```
+127.0.0.1/test
+```
