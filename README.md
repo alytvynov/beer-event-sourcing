@@ -7,8 +7,16 @@
     
 ## Installation
 
-Create your database
+Create your database   
 
-Run commands in your DB
+Run SQL in your DB
+```
 * vendor/prooph/pdo-event-store/scripts/mysql/01_event_streams_table.sql
 * vendor/prooph/pdo-event-store/scripts/mysql/02_projections_table.sql
+```
+
+
+Run the symfony command
+```
+php bin/console prooph_event_store.todo_store
+```

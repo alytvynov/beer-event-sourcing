@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\MessageCommand\BuyBeerCommand;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Routing\Annotation\Route;
 
 class MessangerController
 {
