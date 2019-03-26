@@ -27,5 +27,11 @@ class CreateEventStreamCommand extends ContainerAwareCommand
 
         $eventStore->create(new Stream(new StreamName('event_stream'), new \ArrayIterator([])));
         $output->writeln('<info>Event stream was created successfully.</info>');
+
+        for ($i = 0; $i < 10; $i++) {
+            $streamName = sprintf('user#%s', $i);
+            $eventStore->create(new Stream(new StreamName($streamName), new \ArrayIterator([])));
+            $output->writeln(sprintf('Event stream <info>%s</info> was created successfully.', $streamName));
+        }
     }
 }

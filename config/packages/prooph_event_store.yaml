@@ -7,6 +7,8 @@ prooph_event_store:
           repository_class: App\ProophessorDo\Infrastructure\Repository\EventStoreTodoList
           aggregate_type: App\ProophessorDo\Model\Todo\Todo
           aggregate_translator: prooph_event_sourcing.aggregate_translator
+          one_stream_per_aggregate: true
+          #stream_name: 'user#6'
 
 services:
   Prooph\EventStore\Pdo\MySqlEventStore:
@@ -17,7 +19,8 @@ services:
     factory: ['@database_connection', getWrappedConnection]
 
   prooph_event_store.single_stream_strategy:
-    class: Prooph\EventStore\Pdo\PersistenceStrategy\MySqlSingleStreamStrategy
+    #class: Prooph\EventStore\Pdo\PersistenceStrategy\MySqlSingleStreamStrategy
+    class: Prooph\EventStore\Pdo\PersistenceStrategy\MySqlAggregateStreamStrategy
 
   prooph_event_sourcing.aggregate_translator:
     class: Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator
