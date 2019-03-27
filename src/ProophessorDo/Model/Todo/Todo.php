@@ -21,14 +21,24 @@ final class Todo extends AggregateRoot implements Entity
     /**
      * @var string
      */
+    private $supplierId;
+
+    /**
+     * @var string
+     */
     private $status;
 
-    public static function post(string $status, TodoId $todoId): Todo
+    public static function post(string $supplierId, TodoId $todoId): Todo
     {
         $self = new self();
-        $self->recordThat(TodoWasPosted::withData($todoId, $status));
+        $self->recordThat(TodoWasPosted::bySupplier($supplierId, $todoId));
 
         return $self;
+    }
+
+    public function getSupplierId(): string
+    {
+        return $this->supplierId;
     }
 
     public function status(): string
@@ -40,11 +50,12 @@ final class Todo extends AggregateRoot implements Entity
     {
         $this->todoId = $event->todoId();
         $this->status = $event->status();
+        $this->supplierId = $event->getSupplierId();
     }
 
     protected function whenTodoWasMarkedAsDone(TodoWasMarkedAsDone $event): void
     {
-        $this->status = $event->newStatus();
+        $this->status = $event->status();
     }
 
     protected function whenTodoWasReopened(TodoWasReopened $event): void
@@ -69,7 +80,7 @@ final class Todo extends AggregateRoot implements Entity
     {
         $handler = $this->determineEventHandlerMethodFor($e);
 
-        if (! \method_exists($this, $handler)) {
+        if (!\method_exists($this, $handler)) {
             throw new \RuntimeException(\sprintf(
                 'Missing event handler method %s for aggregate root %s',
                 $handler,
@@ -78,6 +89,20 @@ final class Todo extends AggregateRoot implements Entity
         }
 
         $this->{$handler}($e);
+    }
+
+    public function markAsClosed(): void
+    {
+        $this->status = TodoWasMarkedAsDone::STATUS;
+
+        $this->recordThat(TodoWasMarkedAsDone::withData($this->supplierId, $this->todoId));
+    }
+
+    public function markAsOpened(): void
+    {
+        $this->status = TodoWasReopened::STATUS;
+
+        $this->recordThat(TodoWasReopened::withData($this->supplierId, $this->todoId));
     }
 
     protected function determineEventHandlerMethodFor(AggregateChanged $e): string

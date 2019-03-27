@@ -9,6 +9,8 @@ use App\ProophessorDo\Model\Todo\TodoId;
 
 final class TodoWasPosted extends AggregateChanged
 {
+    const STATUS = 'POSTED';
+
     /**
      * @var TodoId
      */
@@ -17,16 +19,38 @@ final class TodoWasPosted extends AggregateChanged
     /**
      * @var string
      */
-    private $status;
+    private $supplierId;
 
-    public static function withData(TodoId $todoId, string $status = 'posted'): TodoWasPosted
+    /**
+     * @var string
+     */
+    private $status = self::STATUS;
+
+    public static function bySupplier(string $supplierId, TodoId $todoId, string $status = self::STATUS): TodoWasPosted
     {
+        /** @var self $event */
         $event = self::occur($todoId->toString(), [
+            'supplierId' => $supplierId,
             'status' => $status,
         ]);
 
         $event->todoId = $todoId;
+        $event->supplierId = $supplierId;
         $event->status = $status;
+
+        return $event;
+    }
+
+    public static function withData(string $supplierId, TodoId $todoId, string $status = 'posted'): TodoWasPosted
+    {
+        $event = self::occur($todoId->toString(), [
+            'status' => $status,
+            'supplierId' => $supplierId,
+        ]);
+
+        $event->todoId = $todoId;
+        $event->status = $status;
+        $event->supplierId = $supplierId;
 
         return $event;
     }
@@ -42,6 +66,14 @@ final class TodoWasPosted extends AggregateChanged
 
     public function status(): string
     {
-        return $this->status;
+        return $this->payload['status'];
+    }
+
+    /**
+     * @return string
+     */
+    public function getSupplierId(): string
+    {
+        return $this->payload['supplierId'];
     }
 }

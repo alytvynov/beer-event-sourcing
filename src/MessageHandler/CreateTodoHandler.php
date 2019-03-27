@@ -3,16 +3,15 @@ declare(strict_types=1);
 
 namespace App\MessageHandler;
 
-use App\MessageCommand\BuyBeerCommand;
-use App\MessageCommand\ConsumeBeerCommand;
+use App\MessageCommand\CloseTodoCommand;
+use App\MessageCommand\CreateTodoCommand;
 use App\ProophessorDo\Infrastructure\Repository\EventStoreTodoList;
 use App\ProophessorDo\Model\Todo\Todo;
-use App\ProophessorDo\Model\Todo\TodoId;
 use App\ProophessorDo\Model\Todo\TodoList;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-class BuyBeerCommandHandler implements MessageHandlerInterface
+class CreateTodoHandler implements MessageHandlerInterface
 {
     /**
      * @var MessageBusInterface
@@ -30,21 +29,20 @@ class BuyBeerCommandHandler implements MessageHandlerInterface
         $this->bus = $bus;
     }
 
-    /**
-     * @param BuyBeerCommand $command
-     */
-    public function __invoke(BuyBeerCommand $command): void
+    public function __invoke(CreateTodoCommand $command): void
     {
-        file_put_contents('/tmp/aaa.txt', $command->getLog(), FILE_APPEND);
-
-        if ($command->getAmount() > 0) {
-            $this->bus->dispatch(
-                new ConsumeBeerCommand($command->getName(), $command->getAmount())
-            );
-        }
-
-        $todo = Todo::post('initialize', TodoId::generate());
+        $todo = Todo::post(
+            $command->getSupplierI(),
+            $command->getTodoId()
+        );
 
         $this->toDoList->save($todo);
+
+        $this->bus->dispatch(
+            new CloseTodoCommand(
+                $command->getSupplierI(),
+                $command->getTodoId()->toString()
+            )
+        );
     }
 }

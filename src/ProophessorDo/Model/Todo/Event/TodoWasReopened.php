@@ -9,25 +9,34 @@ use App\ProophessorDo\Model\Todo\TodoId;
 
 final class TodoWasReopened extends AggregateChanged
 {
+    const STATUS = 'REOPENED';
+
     /**
      * @var TodoId
      */
     private $todoId;
 
     /**
+     * @var int
+     */
+    private $supplierId;
+
+    /**
      * @var string
      */
-    private $status;
+    private $status = self::STATUS;
 
-    public static function withStatus(TodoId $todoId, string $status): TodoWasReopened
+    public static function withData(string $supplierId, TodoId $todoId, string $status = self::STATUS): TodoWasReopened
     {
         /** @var self $event */
         $event = self::occur($todoId->toString(), [
             'status' => $status,
+            'supplierId' => $supplierId,
         ]);
 
         $event->todoId = $todoId;
         $event->status = $status;
+        $event->supplierId = $supplierId;
 
         return $event;
     }
@@ -41,8 +50,17 @@ final class TodoWasReopened extends AggregateChanged
         return $this->todoId;
     }
 
+
     public function status(): string
     {
-        return $this->status;
+        return $this->payload['status'];
+    }
+
+    /**
+     * @return string
+     */
+    public function getSupplierId(): string
+    {
+        return $this->payload['supplierId'];
     }
 }

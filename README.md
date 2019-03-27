@@ -1,6 +1,6 @@
 # Test beer application
 * Symfony
-* CQRS
+* Messanger component
 * Prooph Event sourcing
 * Prooph Event store
     
@@ -16,12 +16,22 @@ Run SQL in your DB
 ```
 
 
-Run the symfony command
+#### Run the symfony command to create the event stream
+Need only for writing by Aggregate Type. For Aggregate creates stream automatically.
 ```
 php bin/console prooph_event_store.todo_store
 ```
 
-To test saving GET REQUEST 
+#### To test saving GET REQUEST 
 ```
 127.0.0.1/test
+```
+Or
+```
+127.0.0.1/supplier/{id}
+```
+
+#### Fixtures
+```php
+php bin/console doctrine:fixtures:load;
 ```
